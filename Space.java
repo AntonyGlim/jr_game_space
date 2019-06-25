@@ -21,6 +21,19 @@ public class Space {
     public static void main(String[] args) {
     }
 
+    /** управляет всей логикой игры*/
+    public void run(){
+
+    }
+    /** отвечает за отрисовку очередного "кадра"*/
+    public void draw(){
+
+    }
+
+    public void sleep(int ms){
+
+    }
+
     public int getWidth() {
         return width;
     }
