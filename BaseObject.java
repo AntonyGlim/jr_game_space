@@ -14,6 +14,21 @@ public abstract class BaseObject {
         this.isAlive = true;
     }
 
+    public void draw(){}
+
+    public void move(){}
+
+    public void die(){
+        isAlive = false;
+    }
+    /**
+     * Если объекты пересеклись - возвращать true, если нет - false.
+     * Если центр круга одного объекта попал в круг другого, то будем считать, что они столкнулись.
+     */
+    public boolean isIntersect(BaseObject o){
+        return Math.sqrt(Math.pow((o.x - this.x), 2) + Math.pow((o.y - this.y), 2)) < Math.max(o.radius, this.radius);
+    }
+
     public boolean isAlive() {
         return isAlive;
     }
@@ -42,3 +57,6 @@ public abstract class BaseObject {
         this.radius = radius;
     }
 }
+
+//4. В классе BaseObject создай метод isIntersect(BaseObject o), который возвращает boolean.
+//5. Реализуй метод isIntersect(BaseObject o). В случае если объекты столкнулись, нужно вернуть true, иначе - false
