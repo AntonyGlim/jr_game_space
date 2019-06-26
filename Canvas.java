@@ -1,10 +1,6 @@
 package com.javarush.task.task25.task2515;
 
-/**
- * Он будет ответственным за "отрисовку" объектов.
- * С его помощью они будут отрисовывать себя.
- * Вернее даже на нем.
- */
+
 public class Canvas {
     private int width;
     private int height;
@@ -13,42 +9,47 @@ public class Canvas {
     public Canvas(int width, int height) {
         this.width = width;
         this.height = height;
-        matrix = new char[height][width];
+        this.matrix = new char[height + 2][width + 2];
     }
 
-    /** будет "ставить точку в координатах x,y цветом c" */
-    public void setPoint(double x, double y, char c){
-        if (y >= 0 && x >= 0 && y < matrix.length && x < matrix[0].length)
-            matrix[(int)Math.round(y)][(int) Math.round(x)] = c;
+    public void clear() {
+        this.matrix = new char[height + 2][width + 2];
     }
 
-    /** копирует переданную ему картинку (матрицу) в матрицу Canvas. начиная с координат x, y */
-    public void drawMatrix(double x, double y, int[][] matrix, char c){
+    public void drawMatrix(double x, double y, int[][] matrix, char c) {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[0].length; j++) {
-                if (matrix[i][j] != 0){
+                if (matrix[i][j] != 0) {
                     setPoint(x + j, y + i, c);
                 }
             }
         }
     }
 
-    public void clear(){
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[0].length; j++) {
-                matrix[i][j] = ' ';
-            }
+    public void setPoint(double x, double y, char c) {
+        int xRounded = (int) Math.round(x);
+        int yRounded = (int) Math.round(y);
+        if (xRounded >= 0 && xRounded < matrix[0].length && yRounded >= 0 && yRounded < matrix.length) {
+            matrix[yRounded][xRounded] = c;
         }
     }
 
-    public void print(){
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[0].length; j++) {
+    public void print() {
+        System.out.println();
+
+        for (int i = 0; i < height + 2; i++) {
+            for (int j = 0; j < width + 2; j++) {
+                System.out.print(" ");
                 System.out.print(matrix[i][j]);
+                System.out.print(" ");
             }
+
             System.out.println();
         }
-        System.out.println("\n\n");
+
+        System.out.println();
+        System.out.println();
+        System.out.println();
     }
 
     public int getWidth() {
