@@ -108,6 +108,13 @@ public class Space {
     public void createUfo() {
         //тут нужно создать новый НЛО.
         //1 раз за 10 вызовов метода.
+        double probability = 0.1;
+        double rnd = Math.random();
+        if (ufos.isEmpty() && rnd <= probability){
+            double x = Math.random() * width;
+            double y = Math.random() * height / 2;
+            ufos.add(new Ufo(x, y));
+        }
     }
 
     /**
@@ -116,7 +123,16 @@ public class Space {
      * б) падение ниже края игрового поля (бомба умирает)
      */
     public void checkBombs() {
-        //тут нужно проверить все возможные столкновения для каждой бомбы.
+        for (Bomb bomb : bombs) {
+            if (bomb.isIntersect(ship)) {
+                bomb.die();
+                ship.die();
+                return;
+            }
+            if (bomb.getY() > height){
+                bomb.die();
+            }
+        }
     }
 
     /**
@@ -125,7 +141,18 @@ public class Space {
      * б) вылет выше края игрового поля (ракета умирает)
      */
     public void checkRockets() {
-        //тут нужно проверить все возможные столкновения для каждой ракеты.
+        for (Rocket rocket : rockets) {
+            for (Ufo ufo : ufos) {
+                if(ufo.isIntersect(rocket)){
+                    ufo.die();
+                    rocket.die();
+                    break;
+                }
+            }
+            if (rocket.getY() < 0){
+                rocket.die();
+            }
+        }
     }
 
     /**
@@ -134,6 +161,29 @@ public class Space {
     public void removeDead() {
         //тут нужно удалить все умершие объекты из списков.
         //Кроме космического корабля - по нему определяем идет еще игра или нет.
+        List<Ufo> ufosAlive = new ArrayList<>();
+        for (Ufo ufo : ufos) {
+            if (ufo.isAlive()){
+                ufosAlive.add(ufo);
+            }
+        }
+        ufos = ufosAlive;
+
+        List<Rocket> rocketsAlive = new ArrayList<>();
+        for (Rocket rocket : rockets) {
+            if (rocket.isAlive()){
+                rocketsAlive.add(rocket);
+            }
+        }
+        rockets = rocketsAlive;
+
+        List<Bomb> bombsAlive = new ArrayList<>();
+        for (Bomb bomb : bombs) {
+            if (bomb.isAlive()){
+                bombsAlive.add(bomb);
+            }
+        }
+        bombs = bombsAlive;
     }
 
     /**
