@@ -84,9 +84,8 @@ public class Space {
      * Двигаем все объекты игры
      */
     public void moveAllItems() {
-        //нужно получить список всех игрвых объектов и у каждого вызвать метод move().
-        for (BaseObject baseObject : getAllItems()) {
-            baseObject.move();
+        for (BaseObject object : getAllItems()) {
+            object.move();
         }
     }
 
@@ -94,23 +93,21 @@ public class Space {
      * Метод возвращает общий список, который содержит все объекты игры
      */
     public List<BaseObject> getAllItems() {
-        List<BaseObject> allObjList = new ArrayList<>();
-        allObjList.addAll(ufos);
-        allObjList.addAll(bombs);
-        allObjList.addAll(rockets);
-        allObjList.add(ship);
-        return allObjList;
+        ArrayList<BaseObject> list = new ArrayList<BaseObject>(ufos);
+        list.add(ship);
+        list.addAll(bombs);
+        list.addAll(rockets);
+        return list;
     }
 
     /**
      * Создаем новый НЛО. 1 раз на 10 вызовов.
      */
     public void createUfo() {
-        //тут нужно создать новый НЛО.
-        //1 раз за 10 вызовов метода.
-        double probability = 0.1;
-        double rnd = Math.random();
-        if (ufos.isEmpty() && rnd <= probability){
+        if (ufos.size() > 0) return;
+
+        int random10 = (int) (Math.random() * 10);
+        if (random10 == 0) {
             double x = Math.random() * width;
             double y = Math.random() * height / 2;
             ufos.add(new Ufo(x, y));
@@ -124,14 +121,13 @@ public class Space {
      */
     public void checkBombs() {
         for (Bomb bomb : bombs) {
-            if (bomb.isIntersect(ship)) {
-                bomb.die();
+            if (ship.isIntersect(bomb)) {
                 ship.die();
-                return;
-            }
-            if (bomb.getY() > height){
                 bomb.die();
             }
+
+            if (bomb.getY() >= height)
+                bomb.die();
         }
     }
 
@@ -143,15 +139,14 @@ public class Space {
     public void checkRockets() {
         for (Rocket rocket : rockets) {
             for (Ufo ufo : ufos) {
-                if(ufo.isIntersect(rocket)){
+                if (ufo.isIntersect(rocket)) {
                     ufo.die();
                     rocket.die();
-                    break;
                 }
             }
-            if (rocket.getY() < 0){
+
+            if (rocket.getY() <= 0)
                 rocket.die();
-            }
         }
     }
 
@@ -159,31 +154,20 @@ public class Space {
      * Удаляем умершие объекты (бомбы, ракеты, НЛО) из списков
      */
     public void removeDead() {
-        //тут нужно удалить все умершие объекты из списков.
-        //Кроме космического корабля - по нему определяем идет еще игра или нет.
-        List<Ufo> ufosAlive = new ArrayList<>();
-        for (Ufo ufo : ufos) {
-            if (ufo.isAlive()){
-                ufosAlive.add(ufo);
-            }
+        for (BaseObject object : new ArrayList<BaseObject>(bombs)) {
+            if (!object.isAlive())
+                bombs.remove(object);
         }
-        ufos = ufosAlive;
 
-        List<Rocket> rocketsAlive = new ArrayList<>();
-        for (Rocket rocket : rockets) {
-            if (rocket.isAlive()){
-                rocketsAlive.add(rocket);
-            }
+        for (BaseObject object : new ArrayList<BaseObject>(rockets)) {
+            if (!object.isAlive())
+                rockets.remove(object);
         }
-        rockets = rocketsAlive;
 
-        List<Bomb> bombsAlive = new ArrayList<>();
-        for (Bomb bomb : bombs) {
-            if (bomb.isAlive()){
-                bombsAlive.add(bomb);
-            }
+        for (BaseObject object : new ArrayList<BaseObject>(ufos)) {
+            if (!object.isAlive())
+                ufos.remove(object);
         }
-        bombs = bombsAlive;
     }
 
     /**
@@ -192,7 +176,26 @@ public class Space {
      * б) отрисовываем все объекты на холст.
      */
     public void draw(Canvas canvas) {
-        //тут нужно отрисовать все объекты игры
+        //draw game
+        for (int i = 0; i < width + 2; i++) {
+            for (int j = 0; j < height + 2; j++) {
+                canvas.setPoint(i, j, '.');
+            }
+        }
+
+        for (int i = 0; i < width + 2; i++) {
+            canvas.setPoint(i, 0, '-');
+            canvas.setPoint(i, height + 1, '-');
+        }
+
+        for (int i = 0; i < height + 2; i++) {
+            canvas.setPoint(0, i, '|');
+            canvas.setPoint(width + 1, i, '|');
+        }
+
+        for (BaseObject object : getAllItems()) {
+            object.draw(canvas);
+        }
     }
 
 
